@@ -176,27 +176,29 @@ def ventHandler(evt) {
 	debuglog "${evt.device} was set to ${evt.value}"
 }
 
+//HACKS! Restore at: https://github.com/napalmcsr/Hubitat_Napalmcsr/blob/master/Apps/KeenectLite/KeenectLiteZone.src#L179-L199
 def zoneEvaluate(){
-	infolog "Running zoneEvaluate"
-	Map VentParams = [:]
+    infolog "Running zoneEvaluate"
+    Map VentParams = [:]
     debuglog "zoneEvaluate: ventmode: ${state.mainTstatState}"
-	if ((state.mainTstatState!="IDLE")||TreatIdleAsFan){
-		switch (state.mainTstatState){
-			case "HEATING" :
-				VentParams = SetHeatVentParams()
-				break
-			case "COOLING" :
-				VentParams = SetCoolVentParams()
-				break
-			case "FAN ONLY" :
-				VentParams = SetFanVentParams()
-				break
-			case "IDLE" :
-				VentParams = SetFanVentParams()
-				break
-			default :
-				VentParams = SetErrorVentParams()
-				break
+    // Because Ecobee does not set the thermostat state to heating, and instead prefers idle, we remove the condition and hack idle state with setheatventparams() 
+    if ((state.mainTstatState!="Fanny")||TreatIdleAsFan){
+        switch (state.mainTstatState){
+            case "HEATING" :
+                VentParams = SetHeatVentParams()
+                break
+            case "COOLING" :
+                VentParams = SetCoolVentParams()
+                break
+            case "FAN ONLY" :
+                VentParams = SetFanVentParams()
+                break
+            case "IDLE" :
+                VentParams = SetHeatVentParams()
+                break
+            default :
+                VentParams = SetErrorVentParams()
+                break
 				   
 		} 
 		infolog "zoneEvaluate:Check Tstat Mode"
